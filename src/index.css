@@ -11,3 +11,44 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+input:focus,
+button:focus {
+    outline: none !important;
+}
+
+input[type="text"] {
+    width: 100px;
+    border-top: 0;
+    border-left: 0;
+    border-right: 0;
+    border-bottom: 1px  solid grey !important
+}
+
+input[type="text"].item {
+    width: 250px;
+}
+
+button {
+    background-color: white;
+    color: grey;
+    border: none;
+    margin: 2px !important;
+    padding: 2px 9px;
+    border-radius: 2px !important;
+}
+
+button.active {
+    background-color: #33b5e5;
+    color: white;
+}
+
+button.active:hover {
+    background-color: #33b5e5;
+    color: white;
+}
+
+button:hover {
+    background-color: grey;
+    color: white;
+}

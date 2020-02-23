@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 
-import './DatatableComponentStyles.css';
-
 export default class DatatableComponent extends Component {
 
     constructor(props) {
@@ -34,6 +32,23 @@ export default class DatatableComponent extends Component {
                 });
             })
     }
+
+    // componentDidMount() {
+       
+    //             const data = this.props.items;
+    //             const dataFiltered = this.props.items;
+    //             let totalPages = Math.ceil(this.props.items.length / 10)
+    //             let pagination = []
+    //             for (let index = 1; index <= totalPages; index++) {
+    //                 pagination[index] = [index];
+    //             }
+
+    //             this.setState({ 
+    //                 data,
+    //                 dataFiltered,
+    //                 pagination
+    //             });
+    // }
 
     searchHandler = (e) => {
 
@@ -74,6 +89,7 @@ export default class DatatableComponent extends Component {
     pageHandler = (page) => { this.setState({  currentPage: page }) }
  
     render() {
+        console.log(this.state.data)
 
         if(this.state.dataFiltered.length > 0) {
             let items = this.state.dataFiltered.slice(((this.state.currentPage - 1) * 10), this.state.currentPage * 10); // Cortamos el JSon para la paginación
