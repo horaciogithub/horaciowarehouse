@@ -1,12 +1,12 @@
 import React from "react";
 import "./App.css";
 
-import Datatable from './component/Datatable';
+import WarehouseContainer from './container/WarehouseContainer/WarehouseContainer';
 
 function App() {
   return (
     <div className="container">
-      <Datatable />
+      <WarehouseContainer />
     </div>
   );
 }

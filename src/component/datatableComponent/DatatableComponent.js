@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 
-import './Datatable.css';
+import './DatatableComponentStyles.css';
 
-export default class DatatablePage extends Component {
+export default class DatatableComponent extends Component {
 
     constructor(props) {
         super(props)
