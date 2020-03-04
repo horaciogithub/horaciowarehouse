@@ -1,0 +1,24 @@
+.table-items {
+    margin-top: 20px;
+    padding: 15px;
+    box-shadow: 0 0 5px rgb(73, 73, 73);
+    background-color: white;
+}
+
+.data-items th,
+tr:nth-child(2) th {
+    border: 0 !important;
+}
+
+.add-button {
+    background-color: #d50000;
+    color: white;
+    border: 0px;
+    padding: 10px 12px;
+    border-radius: 4px;
+}
+
+.pagination-bar {
+    position: relative;
+    width: fit-content;
+}
