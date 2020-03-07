@@ -12,16 +12,145 @@ class WarehouseContainer extends Component {
     constructor(props) {
         super(props)
         this.state = {
+            data: {},
+            dataFiltered: {},
             currentPage: 1,
             pagination: [],
             search: '',
-            file: '',
+            
+            "amount":0,
+            "brand": "",
+            "name": "",
+            "color": "",
+            "description": "",
+            "box": {
+                "ref": "",
+            },
+
+            "ub": "E1",
         }
     }
 
     componentDidMount() {
-        this.props.loadData()
+        this.props.loadData();
+        this.refreshTableHandler();
     }
+
+    refreshTableHandler = () => {
+        axios.get(`http://localhost:8080/warehouse/items/all`)
+            .then(res => {
+                const data = res.data;
+                const dataFiltered = res.data;
+                let totalPages = Math.ceil(res.data.length / 8)
+                let pagination = []
+                for (let index = 1; index <= totalPages; index++) {
+                    pagination[index] = [index];
+                }
+
+                this.setState({ 
+                    data,
+                    dataFiltered,
+                    pagination,
+                });
+            })
+    }
+
+    searchHandler = (e) => {
+
+        let dataFilter = [];
+        let iterator = 0;
+
+        this.state.data.map(item => (
+            item.ref.includes(e.currentTarget.value.toUpperCase()) || item.ub.includes(e.currentTarget.value.toUpperCase())
+            || (item.name.toUpperCase()).includes(e.currentTarget.value.toUpperCase()) ? 
+                dataFilter[iterator++] = item : 
+                null
+        ))
+
+        if (dataFilter.length > 0) {
+            let totalPages = Math.ceil(dataFilter.length / 10)
+            let pagination = []
+            for (let index = 1; index <= totalPages; index++) {
+                pagination[index] = [index];
+            }
+            this.setState({ 
+                dataFiltered: dataFilter,
+                pagination: pagination,
+                currentPage: 1
+            })
+        } else {
+            let totalPages = Math.ceil(this.state.data.length / 10)
+            let pagination = []
+            for (let index = 1; index <= totalPages; index++) {
+                pagination[index] = [index];
+            }
+            this.setState({ 
+                dataFiltered: this.state.data,
+                pagination: pagination,
+                currentPage: 1
+            })
+        }
+    }
+
+    pageHandler = (page) => { this.setState({  currentPage: page }) }
+
+    changeNewData = (e) => {
+        this.setState({ [e.target.name] : e.target.value });
+    }
+
+    changeRefHandler = (e) => {
+
+        let ub = this.state.ub;
+
+        this.state.data.map(item => (
+            item.ref === e.target.value ? ub = item.ub : null
+        ))
+
+        this.setState({ 
+           box: {
+            [e.target.name] : e.target.value
+           },
+            "ub": ub 
+        });
+    }
+
+    newItemSendHandler = () => {
+        let data = { 
+            "amount": this.state.amount,
+            "brand": this.state.brand,
+            "name": this.state.name,
+            "color": this.state.color,
+            "description": this.state.description,
+            "box": {
+                "ref": this.state.box.ref,
+            },
+        }
+
+        axios.post(`http://localhost:8080/warehouse/items/create`, data)
+        .then(res => {
+            this.refreshTableHandler()
+        }).catch(e => {
+            console.log('Error: ' + e)
+        })
+    }
+
+    deleteHandler = (e) => {
+        //deleteItem(e.currentTarget.value, this.refreshTableHandler()) // Respuesta lenta
+
+        let id = e.currentTarget.value;
+        axios.delete(`http://localhost:8080/warehouse/items/item/delete/` + id)
+        .then(res => {
+            console.log('Item eliminado: ' + id)
+            this.refreshTableHandler()
+        }).catch(e => {
+            console.log('Error: ' + e)
+        })
+    }
+
+
+
+
+
 
     showFileHandler = () => {
         if (window.File && window.FileReader && window.FileList && window.Blob) {
@@ -110,7 +239,7 @@ class WarehouseContainer extends Component {
                     }
                 }
 
-                axios.post(`http://localhost:8080/warehouse/items/create/massive`, itemJson.reverse())
+                axios.post(`http://localhost:8080/warehouse/items/create/massive`, itemJson)
                     .then(res => {
                         console.log("-> Se han creado los items")
                     }).catch(e => {
@@ -126,20 +255,21 @@ class WarehouseContainer extends Component {
     }
 
     render() {
-        
-        let totalPages = Math.ceil(this.props.data.length / 10)
-        let pages = []
-        for (let index = 1; index <= totalPages; index++) {
-            pages[index] = [index];
-        }
 
         return(
             <div>
                 <FileReaderComponent showFile={ this.showFileHandler }/>    
                 <DatatableComponent 
-                    items={ this.props.data }
-                    itemsFiltered={ this.props.dataFiltered }
-                    pages={ pages }
+                    data               = { this.props.data         }
+                    dataFiltered       = { this.state.dataFiltered }
+                    currentPage        = { this.state.currentPage  }
+                    ub                 = { this.state.ub           }
+                    pagination         = { this.state.pagination   }
+                    pageHandler        = { this.pageHandler        }
+                    searchHandler      = { this.searchHandler      }
+                    changeRefHandler   = { this.changeRefHandler   }
+                    changeNewData      = { this.changeNewData      }
+                    newItemSendHandler = { this.newItemSendHandler }
                 />
             </div>
         );

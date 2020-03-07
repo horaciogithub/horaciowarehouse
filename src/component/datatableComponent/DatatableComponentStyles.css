@@ -22,3 +22,9 @@ tr:nth-child(2) th {
     position: relative;
     width: fit-content;
 }
+
+.no-content {
+    position: relative;
+    top: 200px;
+    text-align: center;
+}
