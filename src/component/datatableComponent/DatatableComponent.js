@@ -1,6 +1,8 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
 
-import './DatatableComponentStyles.css';
+import Pagination from '../pagination/paginationComponent'
+
+import './DatatableComponentStyles.css'
 
 export default class DatatableComponent extends Component {
 
@@ -23,17 +25,6 @@ export default class DatatableComponent extends Component {
                     </td>
                 </tr>
             ))
-
-            // Botones de paginación
-            const paginationBtns = (
-               <div className="pagination-bar">
-                { this.props.pagination.map((page) => (
-                    parseInt(page) === parseInt(this.props.currentPage) ? 
-                    <button className="active" key={page} onClick={() => this.props.pageHandler(page)}>{page}</button> :
-                    <button key={page} onClick={() => this.props.pageHandler(page)}>{page}</button>
-                ))}
-               </div>
-            )
 
             // Referencias de la caja
             let references = [];
@@ -86,7 +77,11 @@ export default class DatatableComponent extends Component {
                             { rows }
                         </tbody>
                     </table>
-                    {paginationBtns}
+                    <Pagination 
+                        pages={ this.props.pagination }
+                        currentPage={ this.props.currentPage}
+                        pageHandler={ this.props.pageHandler }
+                        range={4}/>
                 </div>
             )
         } else {

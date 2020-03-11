@@ -1,6 +1,6 @@
 import React from 'react';
 
-const FileReader = (props) => {
+const fileReader = props => {
    return(
         <div>
             <input type="file"  onChange={ props.showFile }/>
@@ -8,4 +8,4 @@ const FileReader = (props) => {
    )
 }
 
-export default FileReader;
+export default fileReader;
