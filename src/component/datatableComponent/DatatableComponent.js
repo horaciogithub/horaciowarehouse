@@ -4,6 +4,10 @@ import Pagination from '../pagination/paginationComponent'
 
 import './DatatableComponentStyles.css'
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faTrashAlt, faEdit } from '@fortawesome/free-solid-svg-icons'
+import Modal from '../modal/ModalComponent'
+
 export default class DatatableComponent extends Component {
 
     render() {
@@ -21,8 +25,20 @@ export default class DatatableComponent extends Component {
                     <td>{item.description}</td>
                     <td>{item.amount}</td>
                     <td>
-                        <button value={item.id} onClick={ this.deleteHandler }>Eliminar</button>
+                        <button type="button" data-toggle="modal" data-target={"#modal"+item.id}><FontAwesomeIcon icon={faEdit} color="black"/></button>
+                        <button className="button-delete" value={item.id} onClick={ this.props.deleteHandler }><FontAwesomeIcon icon={faTrashAlt} color="#d50000"/></button>
+                        <Modal 
+                            id          = {item.id}
+                            reference   = {item.ref}
+                            ub          = {item.ub}
+                            name        = {item.name}
+                            brand       = {item.brand}
+                            color       = {item.color}
+                            description = {item.description}
+                            amount      = {item.amount}
+                        />
                     </td>
+                   
                 </tr>
             ))
 

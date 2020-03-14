@@ -128,6 +128,7 @@ class WarehouseContainer extends Component {
     }
 
     deleteHandler = (e) => {
+        console.log(e)
         let id = e.currentTarget.value;
         axios.delete(DELETE_ITEM_URI + id)
         .then(res => {
@@ -232,14 +233,13 @@ class WarehouseContainer extends Component {
                         console.log('Error: ' + e)
                     })
                }
-
-               this.refreshTableHandler();
             } 
             reader.readAsText(file);
    
       } else {
          alert("Your browser is too old to support HTML5 File API");
       }
+     this.refreshTableHandler()
     }
 
     render() {
@@ -258,6 +258,7 @@ class WarehouseContainer extends Component {
                     changeRefHandler   = { this.changeRefHandler   }
                     changeNewData      = { this.changeNewData      }
                     newItemSendHandler = { this.newItemSendHandler }
+                    deleteHandler      = { this.deleteHandler      }
                 />
             </div>
         );

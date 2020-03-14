@@ -18,6 +18,14 @@ tr:nth-child(2) th {
     border-radius: 4px;
 }
 
+.button-delete {
+    background-color:inherit;
+}
+
+.button-delete:hover {
+    background-color: rgb(255, 255, 255);
+}
+
 .pagination-bar {
     position: relative;
     width: fit-content;
