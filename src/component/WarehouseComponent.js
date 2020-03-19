@@ -1,6 +1,4 @@
-import React, { Component } from 'react';
-import { connect } from "react-redux";
-import * as Functions from '../../events/loadData';
+import React, { useState, useEffect } from 'react';
 
 import {
     GET_ITEMS_URI,
@@ -8,60 +6,56 @@ import {
     DELETE_ITEM_URI,
     CREATE_ITEMS_MASSIVE_URI,
     CREATE_BOX_URI
-} from '../../constants/pathconstants'
+} from '../constants/pathconstants'
 
 import axios from 'axios';
 
-import FileReaderComponent from '../../component/fileReaderComponent/FileReaderComponent';
-import DatatableComponent from '../../component/datatableComponent/DatatableComponent';
+import FileReaderComponent from './fileReaderComponent/FileReaderComponent';
+import DatatableComponent from './datatableComponent/DatatableComponent';
 
-class WarehouseContainer extends Component {
+const  WarehouseContainer  = () => {
 
-    constructor(props) {
-        super(props)
-        this.state = {
-            dataFiltered: {},
-            currentPage: 1,
-            pagination: 0,
-            search: '',
-            
-            "amount":0,
-            "brand": "",
-            "name": "",
-            "color": "",
-            "description": "",
-            "box": {
-                "ref": "",
-            },
+    const [data, setData] = useState({}); // TODO: unificar estados
+    const [dataFiltered, setDataFiltered] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(0);
 
-            "ub": "E1",
+    const [amount, setAmount] = useState();
+    const [brand, setBrand] = useState('');
+    const [name, setName] = useState('');
+    const [color, setColor] = useState('');
+    const [description, setDescription] = useState('');
+    const [ub, setUbication] = useState('');
+    const [box, setBox] = useState({});
+
+    const [loadData, setloadData] = useState();
+
+    useEffect(() => {
+        refreshTable();
+        if(loadData) {
+            refreshTable();
         }
-    }
+    }, [loadData])
 
-    componentDidMount() {
-        this.props.loadData();
-        this.refreshTableHandler();
-    }
-
-    refreshTableHandler = () => {
+    const refreshTable = () => {
         axios.get(GET_ITEMS_URI)
-            .then(res => {
-                const dataFiltered = res.data;
-                let totalPages = Math.ceil(res.data.length / 8)
-
-                this.setState({ 
-                    dataFiltered,
-                    pagination: totalPages,
-                });
+            .then(response => {
+                return response.data;
+            })
+            .then(responseData => {
+                setData(responseData)
+                setDataFiltered(responseData)
+                setTotalPages(Math.ceil(responseData.length / 8))
+            }).catch(error => {
+                console.log(error)
             })
     }
 
-    searchHandler = (e) => {
-
+    const searchHandler = (e) => {
         let dataFilter = [];
         let iterator = 0;
 
-        this.props.data.map(item => (
+        data.map(item => (
             item.ref.includes(e.currentTarget.value.toUpperCase()) || item.ub.includes(e.currentTarget.value.toUpperCase())
             || (item.name.toUpperCase()).includes(e.currentTarget.value.toUpperCase()) ? 
                 dataFilter[iterator++] = item : 
@@ -69,77 +63,74 @@ class WarehouseContainer extends Component {
         ))
 
         if (dataFilter.length > 0) {
-            let totalPages = Math.ceil(dataFilter.length / 10)
-            this.setState({ 
-                dataFiltered: dataFilter,
-                pagination: totalPages,
-                currentPage: 1
-            })
+            setDataFiltered(dataFilter)
+            setTotalPages(Math.ceil(dataFilter.length / 10))
         } else {
-            let totalPages = Math.ceil(this.state.data.length / 10)
-            this.setState({ 
-                dataFiltered: this.state.data,
-                pagination: totalPages,
-                currentPage: 1
-            })
+            setDataFiltered(data)
         }
     }
 
-    pageHandler = (page) => { this.setState({  currentPage: page }) }
+    const pageHandler = (page) => { setCurrentPage(page) }
 
-    changeNewData = (e) => {
-        this.setState({ [e.target.name] : e.target.value });
+    const changeInputValue = (e) => {
+        switch(e.target.name) {
+            case 'name':
+                return setName(e.target.value);
+            case 'brand':
+                return setBrand(e.target.value);
+            case 'amount':
+                return setAmount(e.target.value);
+            case 'color':
+                return setColor(e.target.value);
+            case 'description':
+                return setDescription(e.target.value);
+            default: 
+                return null;
+        }
     }
 
-    changeRefHandler = (e) => {
-
-        let ub = this.state.ub;
-
-        this.state.data.map(item => (
-            item.ref === e.target.value ? ub = item.ub : null
+    const changeRefHandler = (e) => {
+        data.map(item => (
+            item.ref === e.target.value ? setUbication(item.ub) : null
         ))
-
-        this.setState({ 
-           box: {
-            [e.target.name] : e.target.value
-           },
-            "ub": ub 
-        });
+        setBox({ ref : e.target.value })
     }
 
-    newItemSendHandler = () => {
+    const newItemSendHandler = () => {
         let data = { 
-            "amount": this.state.amount,
-            "brand": this.state.brand,
-            "name": this.state.name,
-            "color": this.state.color,
-            "description": this.state.description,
+            "amount": amount,
+            "brand": brand,
+            "name": name,
+            "color": color,
+            "description": description,
             "box": {
-                "ref": this.state.box.ref,
+                "ref": box.ref,
             },
         }
 
         axios.post(CREATE_ITEM_URI, data)
         .then(res => {
-            this.refreshTableHandler()
+            setloadData(Math.random())
         }).catch(e => {
             console.log('Error: ' + e)
         })
     }
 
-    deleteHandler = (e) => {
-        console.log(e)
+    const deleteHandler = (e) => {
+
         let id = e.currentTarget.value;
+
         axios.delete(DELETE_ITEM_URI + id)
         .then(res => {
+            setloadData(Math.random())
             console.log('Item eliminado: ' + id)
-            this.refreshTableHandler()
         }).catch(e => {
             console.log('Error: ' + e)
         })
+        refreshTable();
     }
 
-    showFileHandler = () => {
+    const showFileHandler = () => {
         if (window.File && window.FileReader && window.FileList && window.Blob) {
             var file = document.querySelector('input[type=file]').files[0];
             var reader = new FileReader()
@@ -228,6 +219,7 @@ class WarehouseContainer extends Component {
 
                 axios.post(CREATE_ITEMS_MASSIVE_URI, itemJson)
                     .then(res => {
+                        setloadData(Math.random())
                         console.log("-> Se han creado los items")
                     }).catch(e => {
                         console.log('Error: ' + e)
@@ -239,37 +231,27 @@ class WarehouseContainer extends Component {
       } else {
          alert("Your browser is too old to support HTML5 File API");
       }
-     this.refreshTableHandler()
     }
 
-    render() {
-
-        return(
-            <div>
-                <FileReaderComponent showFile = { this.showFileHandler } />    
-                <DatatableComponent 
-                    data               = { this.props.data         }
-                    dataFiltered       = { this.state.dataFiltered }
-                    currentPage        = { this.state.currentPage  }
-                    ub                 = { this.state.ub           }
-                    pagination         = { this.state.pagination   }
-                    pageHandler        = { this.pageHandler        }
-                    searchHandler      = { this.searchHandler      }
-                    changeRefHandler   = { this.changeRefHandler   }
-                    changeNewData      = { this.changeNewData      }
-                    newItemSendHandler = { this.newItemSendHandler }
-                    deleteHandler      = { this.deleteHandler      }
-                />
-            </div>
+    return(
+        <div>
+            <FileReaderComponent showFile = { showFileHandler } />    
+            <DatatableComponent 
+                data               = { data         !== null ? data         : [] }
+                dataFiltered       = { dataFiltered !== null ? dataFiltered : [] }
+                currentPage        = { currentPage        }
+                ub                 = { ub                 }
+                pages              = { totalPages         }
+                pageHandler        = { pageHandler        }
+                searchHandler      = { searchHandler      }
+                changeRefHandler   = { changeRefHandler   }
+                changeNewData      = { changeInputValue   }
+                newItemSendHandler = { newItemSendHandler }
+                deleteHandler      = { deleteHandler      }
+                loadData           = { setloadData        }
+            />
+        </div>
         );
     }
-}
-
-const mapStateToProps = state => {
-    return {
-      data: state.data,
-      dataFiltered: state.data
-    }
-}
    
-export default connect(mapStateToProps, Functions) (WarehouseContainer)
+export default WarehouseContainer;

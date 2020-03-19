@@ -44,7 +44,7 @@ button:hover {
 }
 
 tr:first-child th {
-    padding-left: 0 !important;
+    /* padding-left: 0 !important; */
 }
 
 thead tr:nth-child(2) {

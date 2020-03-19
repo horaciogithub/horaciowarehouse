@@ -1,11 +1,11 @@
 import React from "react";
 
-import WarehouseContainer from './container/WarehouseContainer/WarehouseContainer';
+import WarehouseComponent from './component/WarehouseComponent';
 
 function App() {
   return (
     <div className="container">
-      <WarehouseContainer />
+      <WarehouseComponent />
     </div>
   );
 }
