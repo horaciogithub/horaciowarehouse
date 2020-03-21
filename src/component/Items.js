@@ -9,6 +9,7 @@ import {
     CREATE_BOX_URI
 } from '../constants/pathconstants'
 import FileReaderComponent from './fileReaderComponent/FileReaderComponent';
+import SelectComponent from './commons/SelectControl';
 import Table from './commons/Table';
 import './Items.css';
 
@@ -16,8 +17,10 @@ const  Items  = () => {
     const [data, setData] = useState();
     const [loading, setLoading] = useState(true);
     const columns = [
-        { title: "Ref", field: "ref" },
-        { title: "Ub", field: "ub" },
+        { title: "Ref", field: "ref",editComponent:props => (
+            <SelectComponent data={data} change={props.onChange} reference='ref'/>
+          ) },
+        { title: "Ub", field: "ub", editable: "never" },
         { title: "Item", field: "name" },
         { title: "Marca", field: "brand" },
         { title: "Color", field: "color" },
@@ -40,7 +43,6 @@ const  Items  = () => {
     }
 
     const createHandler = (data) => {
-        console.log(data)
         setLoading(false)
         axios.post(CREATE_ITEM_URI, data)
             .then(respose => {
@@ -189,6 +191,9 @@ const  Items  = () => {
 
     return(
         <div>
+            <div className="file-control">
+                <FileReaderComponent showFile = { showFileHandler } />
+            </div>
             {data !== undefined ? (
                 <Table 
                     title="Items"
@@ -198,9 +203,6 @@ const  Items  = () => {
                     update={updateHandler}
                     delete={deleteHandler}/>
             ) : null}  
-            <div className="file-control">
-                <FileReaderComponent showFile = { showFileHandler } />
-            </div>
         </div>
         );
     }
