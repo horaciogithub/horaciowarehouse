@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 
 import Pagination from "../pagination/paginationComponent";
 
@@ -9,6 +9,23 @@ import { faTrashAlt, faEdit } from "@fortawesome/free-solid-svg-icons";
 import Modal from "../modal/ModalComponent";
 
 const DatatableComponent = props => {
+
+  const [optionsRef, setOptionRef] = useState();
+
+  useEffect(() => {
+    if(props.data.length > 0) {
+      // Referencias de la caja
+      let references = [];
+      let i = -1;
+
+      props.data.map(item => {
+        return references[i++] = item.ref
+      });
+
+      setOptionRef([...new Set(references)])
+    }
+  }, [props])
+
   if (props.dataFiltered.length > 0) {
     let items = props.dataFiltered.slice(
       (props.currentPage - 1) * 8,
@@ -49,36 +66,20 @@ const DatatableComponent = props => {
             description={item.description}
             amount={item.amount}
             loadData={props.loadData}
+            options={optionsRef}
           />
         </td>
       </tr>
     ));
 
-    // Referencias de la caja
-    let references = [];
-    let i = -1;
-
-    props.data.map(item => (references[i++] = item.ref));
-
-    let options = [...new Set(references)];
-
     return (
       <div className="table-responsive table-items">
-        <div>
-          <input
-            type="text"
-            name="search"
-            placeholder="Buscar"
-            onChange={e => props.searchHandler(e)}
-          />
-          <p>Resultado: {props.dataFiltered.length}</p>
-        </div>
         <table className="table table-hover">
           <thead>
             <tr className="data-items">
               <th>
                 <select name="ref" onChange={props.changeRefHandler}>
-                  {options.map(option => (
+                  {optionsRef.map(option => (
                     <option key={option} value={option}>
                       {option}
                     </option>

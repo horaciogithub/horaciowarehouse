@@ -1,10 +1,13 @@
 body {
-  background-color: #eeeeee !important;
+  background-color: #F8F9F9 !important;
 }
 
 input:focus,
 button:focus {
     outline: none !important;
+}
+input {
+    background-color: inherit;
 }
 
 input[type="text"] {
@@ -41,10 +44,6 @@ button.active:hover {
 button:hover {
     background-color: grey;
     color: white;
-}
-
-tr:first-child th {
-    /* padding-left: 0 !important; */
 }
 
 thead tr:nth-child(2) {

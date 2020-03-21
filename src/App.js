@@ -1,11 +1,30 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import './App.css'
+import Drawer from './component/Drawer';
+import Items from './component/Items';
+import Boxes from './component/Boxes';
+import { Route, BrowserRouter as Router } from "react-router-dom";
 
-import WarehouseComponent from './component/WarehouseComponent';
+const App = () => {
+  const [route, setRoute] = useState('/');
 
-function App() {
+  useEffect(() => {
+    if(route === '/') setRoute('/')
+    if(route === '/boxes')  setRoute('/boxes')
+  }, [route])
+
+  const switchRoute = (path) => {
+    setRoute(path)
+  }
+
   return (
     <div className="container">
-      <WarehouseComponent />
+      <Drawer switchRoute={switchRoute}/>
+      <Router>
+          {route !== '/boxes' ? 
+          <Route exact path='/' component={Items} /> : 
+          <Route path='/' component={Boxes} />}
+      </Router>
     </div>
   );
 }

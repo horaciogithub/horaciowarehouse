@@ -1,136 +1,88 @@
 import React, { useState, useEffect } from 'react';
-
+import axios from 'axios';
 import {
     GET_ITEMS_URI,
     CREATE_ITEM_URI,
+    UPDATE_ITEM_URI,
     DELETE_ITEM_URI,
     CREATE_ITEMS_MASSIVE_URI,
     CREATE_BOX_URI
 } from '../constants/pathconstants'
-
-import axios from 'axios';
-
 import FileReaderComponent from './fileReaderComponent/FileReaderComponent';
-import DatatableComponent from './datatableComponent/DatatableComponent';
+import Table from './commons/Table';
+import './Items.css';
 
-const  WarehouseContainer  = () => {
-
-    const [data, setData] = useState({}); // TODO: unificar estados
-    const [dataFiltered, setDataFiltered] = useState(null);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(0);
-
-    const [amount, setAmount] = useState();
-    const [brand, setBrand] = useState('');
-    const [name, setName] = useState('');
-    const [color, setColor] = useState('');
-    const [description, setDescription] = useState('');
-    const [ub, setUbication] = useState('');
-    const [box, setBox] = useState({});
-
-    const [loadData, setloadData] = useState();
+const  Items  = () => {
+    const [data, setData] = useState();
+    const [loading, setLoading] = useState(true);
+    const columns = [
+        { title: "Ref", field: "ref" },
+        { title: "Ub", field: "ub" },
+        { title: "Item", field: "name" },
+        { title: "Marca", field: "brand" },
+        { title: "Color", field: "color" },
+        { title: "Cantidad", field: "amount" },
+        { title: "Descripción", field: "description" }
+      ];
 
     useEffect(() => {
-        refreshTable();
-        if(loadData) {
-            refreshTable();
-        }
-    }, [loadData])
+       if(loading)  getData();
+    }, [loading])
 
-    const refreshTable = () => {
+    const getData = () => {
         axios.get(GET_ITEMS_URI)
             .then(response => {
-                return response.data;
+                setData(response.data);
             })
-            .then(responseData => {
-                setData(responseData)
-                setDataFiltered(responseData)
-                setTotalPages(Math.ceil(responseData.length / 8))
-            }).catch(error => {
+            .catch(error => {
                 console.log(error)
             })
     }
 
-    const searchHandler = (e) => {
-        let dataFilter = [];
-        let iterator = 0;
-
-        data.map(item => (
-            item.ref.includes(e.currentTarget.value.toUpperCase()) || item.ub.includes(e.currentTarget.value.toUpperCase())
-            || (item.name.toUpperCase()).includes(e.currentTarget.value.toUpperCase()) ? 
-                dataFilter[iterator++] = item : 
-                null
-        ))
-
-        if (dataFilter.length > 0) {
-            setDataFiltered(dataFilter)
-            setTotalPages(Math.ceil(dataFilter.length / 10))
-        } else {
-            setDataFiltered(data)
-        }
-    }
-
-    const pageHandler = (page) => { setCurrentPage(page) }
-
-    const changeInputValue = (e) => {
-        switch(e.target.name) {
-            case 'name':
-                return setName(e.target.value);
-            case 'brand':
-                return setBrand(e.target.value);
-            case 'amount':
-                return setAmount(e.target.value);
-            case 'color':
-                return setColor(e.target.value);
-            case 'description':
-                return setDescription(e.target.value);
-            default: 
-                return null;
-        }
-    }
-
-    const changeRefHandler = (e) => {
-        data.map(item => (
-            item.ref === e.target.value ? setUbication(item.ub) : null
-        ))
-        setBox({ ref : e.target.value })
-    }
-
-    const newItemSendHandler = () => {
-        let data = { 
-            "amount": amount,
-            "brand": brand,
-            "name": name,
-            "color": color,
-            "description": description,
-            "box": {
-                "ref": box.ref,
-            },
-        }
-
+    const createHandler = (data) => {
+        console.log(data)
+        setLoading(false)
         axios.post(CREATE_ITEM_URI, data)
-        .then(res => {
-            setloadData(Math.random())
-        }).catch(e => {
-            console.log('Error: ' + e)
-        })
+            .then(respose => {
+                console.log(respose);
+            })
+            .catch(error => {
+                console.log(error);
+            })
+            .finally(() => {
+                setLoading(true)
+            });
     }
 
-    const deleteHandler = (e) => {
+    const updateHandler = (data) => {
+        setLoading(false)
+        axios.put(UPDATE_ITEM_URI + data.id, data)
+            .then(respose => {
+                console.log(respose);
+             })
+            .catch(error => {
+                console.log(error);
+            })
+            .finally(() => {
+                setLoading(true)
+            });
+    }
 
-        let id = e.currentTarget.value;
-
+    const deleteHandler = (id) => {
+        setLoading(false)
         axios.delete(DELETE_ITEM_URI + id)
-        .then(res => {
-            setloadData(Math.random())
-            console.log('Item eliminado: ' + id)
-        }).catch(e => {
-            console.log('Error: ' + e)
-        })
-        refreshTable();
+        .then(respose => {
+            console.log(respose);
+          })
+          .catch(error => {
+            console.log(error);
+          }).finally(() => {
+            setLoading(true)
+        });
     }
 
     const showFileHandler = () => {
+        setLoading(false)
         if (window.File && window.FileReader && window.FileList && window.Blob) {
             var file = document.querySelector('input[type=file]').files[0];
             var reader = new FileReader()
@@ -219,10 +171,12 @@ const  WarehouseContainer  = () => {
 
                 axios.post(CREATE_ITEMS_MASSIVE_URI, itemJson)
                     .then(res => {
-                        setloadData(Math.random())
                         console.log("-> Se han creado los items")
                     }).catch(e => {
                         console.log('Error: ' + e)
+                    })
+                    .finally(() => {
+                        setLoading(true)
                     })
                }
             } 
@@ -235,23 +189,20 @@ const  WarehouseContainer  = () => {
 
     return(
         <div>
-            <FileReaderComponent showFile = { showFileHandler } />    
-            <DatatableComponent 
-                data               = { data         !== null ? data         : [] }
-                dataFiltered       = { dataFiltered !== null ? dataFiltered : [] }
-                currentPage        = { currentPage        }
-                ub                 = { ub                 }
-                pages              = { totalPages         }
-                pageHandler        = { pageHandler        }
-                searchHandler      = { searchHandler      }
-                changeRefHandler   = { changeRefHandler   }
-                changeNewData      = { changeInputValue   }
-                newItemSendHandler = { newItemSendHandler }
-                deleteHandler      = { deleteHandler      }
-                loadData           = { setloadData        }
-            />
+            {data !== undefined ? (
+                <Table 
+                    title="Items"
+                    data={data} 
+                    columns={columns}
+                    create={createHandler}
+                    update={updateHandler}
+                    delete={deleteHandler}/>
+            ) : null}  
+            <div className="file-control">
+                <FileReaderComponent showFile = { showFileHandler } />
+            </div>
         </div>
         );
     }
    
-export default WarehouseContainer;
+export default Items;

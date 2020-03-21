@@ -1,8 +1,11 @@
 .table-items {
-    margin-top: 20px;
     padding: 15px;
-    box-shadow: 0 0 5px rgb(73, 73, 73);
+    background-color: inherit;
+}
+
+.table-items table {
     background-color: white;
+    box-shadow: 0 0 5px rgb(68, 68, 68);
 }
 
 .data-items th,

@@ -16,16 +16,15 @@ const Modal = (props) => {
             setData({
                 name: props.name,
                 brand: props.brand,
-                ref: props.reference,
-                ub: props.ub,
                 color: props.color,
                 amount: props.amount,
-                description: props.description
+                description: props.description,
+                ref: props.reference
             });
         }
     }, [props, edit])
 
-    const changeField = e => {console.log(e.target.value)
+    const changeField = e => {
 
         setEdit(true) // Habilita modo edición
 
@@ -36,12 +35,6 @@ const Modal = (props) => {
             case 'brand':
                 setData({...data, brand: e.target.value});
                 break;
-            case 'reference':
-                setData({...data, ref: e.target.value});
-                break;
-            case 'ub':
-                setData({...data, ub: e.target.value});
-                break;
             case 'color':
                 setData({...data, color: e.target.value});
                 break;
@@ -50,6 +43,9 @@ const Modal = (props) => {
                 break;
             case 'description':
                 setData({...data, description: e.target.value});
+                break;
+            case 'ref':
+                setData({...data, ref: e.target.value});
                 break;
             default: return null;
         }
@@ -81,14 +77,10 @@ const Modal = (props) => {
                            
                             <div className="d-flex col-12">
                                 <label className="col-3">Referencia: </label>
-                                <SelectControl reference={data.ref}/>
-                            </div>
-
-                            <div className="d-flex col-12">
-                                <label className="col-3">Ubicación: </label>
-                                <div className="col-9">
-                                    <input type="text" value={edit ? data.ub: props.ub} name="ub" onChange={(e) => changeField(e)}/><br/>
-                                </div>
+                                <SelectControl 
+                                    options={props.options} 
+                                    reference={data.ref ? data.ref: ''}
+                                    changeField={ changeField }/>
                             </div>
 
                             <div className="d-flex col-12">
