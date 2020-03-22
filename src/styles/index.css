@@ -2,6 +2,10 @@ body {
   background-color: #fce4ec !important;
 }
 
+#root .container {
+    margin-top: 85px !important;
+}
+
 input:focus,
 button:focus {
     outline: none !important;

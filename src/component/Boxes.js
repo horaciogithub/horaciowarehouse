@@ -1,11 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
-import {
-  GET_BOXES_URI,
-  CREATE_BOX_URI,
-  UPDATE_BOX_URI,
-  DELETE_BOX_URI
-} from "../constants/pathconstants";
+import { getData, createBox, updateBox, deleteBox } from '../utils/boxesRequests';
 import Table from './commons/Table';
 
 const Boxes = () => {
@@ -18,60 +12,19 @@ const Boxes = () => {
   ];
 
   useEffect(() => {
-    if(loading)  getData();
+    if(loading)  getData(setData);
   }, [loading]);
 
-  const getData = () => {
-    axios.get(GET_BOXES_URI)
-      .then(response => {
-        setData(response.data);
-      })
-      .catch(error => {
-        console.log(error);
-      });
-  };
-
   const createHandler = (data) => {
-    setLoading(false)
-    axios.post(CREATE_BOX_URI, data)
-    .then(respose => {
-      console.log(respose);
-    })
-    .catch(error => {
-      console.log(error);
-    })
-    .finally(() => {
-        setLoading(true)
-    });
+    createBox(data, setLoading)
   }
 
   const updateHandler = (data) => {
-    setLoading(false)
-    axios.put(UPDATE_BOX_URI + data.id, data)
-    .then(respose => {
-      console.log(respose);
-    })
-    .catch(error => {
-      console.log(error);
-    })
-    .finally(() => {
-        setLoading(true)
-    });
+    updateBox(data, setLoading)
   }
 
   const deleteHandler = (id) => {
-    setLoading(false)
-    axios
-    .delete(DELETE_BOX_URI + id)
-    .then(respose => {
-      console.log(respose);
-    })
-    .catch(error => {
-      console.log(error);
-    })
-    .finally(() => {
-        setLoading(true)
-    });
+    deleteBox(id, setLoading)
   }
 
   return (

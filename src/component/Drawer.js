@@ -17,10 +17,10 @@ import ListItemText from "@material-ui/core/ListItemText";
 import AddBoxIcon from "@material-ui/icons/AddBox";
 import FormatListBulletedIcon from "@material-ui/icons/FormatListBulleted";
 
-import { useStyles } from './DrawerStyles';
+import drawerStyles from '../styles/drawerStyles';
 
 export default function MiniDrawer(props) {
-  const classes = useStyles();
+  const classes = drawerStyles();
   const theme = useTheme();
   const [open, setOpen] = useState(false);
 

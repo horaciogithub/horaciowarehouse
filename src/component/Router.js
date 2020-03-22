@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
-import './App.css'
-import Drawer from './component/Drawer';
-import Items from './component/Items';
-import Boxes from './component/Boxes';
+import Drawer from './Drawer';
+import Items from './Items';
+import Boxes from './Boxes';
 import { Route, BrowserRouter as Router } from "react-router-dom";
 
 const App = () => {
